@@ -67,7 +67,7 @@ onMounted(() => {
 
   // Set initial default values
   store.filter.cutoff = 12400
-  store.filter.resonance = 42
+  store.filter.resonance = 15
   store.oscType = 'sine'
   store.ampEnv.attack = 0.1
   store.ampEnv.decay = 0.2
@@ -109,9 +109,9 @@ const updateFilterFromXY = (clientX: number, clientY: number) => {
   const cutoff = Math.max(100, normalizedX * 20000)
   store.filter.cutoff = cutoff
 
-  // Map Y to resonance (0 to 100)
+  // Map Y to resonance (0 to 30)
   const normalizedY = 1 - (y / rect.height)
-  store.filter.resonance = normalizedY * 100
+  store.filter.resonance = normalizedY * 30
 }
 
 const onXYMouseDown = (e: MouseEvent) => {
@@ -164,7 +164,7 @@ watch(() => store.filter.cutoff, (newCutoff) => {
 watch(() => store.filter.resonance, (newReso) => {
   if (!isDragging.value && xyPadRef.value) {
     const rect = xyPadRef.value.getBoundingClientRect()
-    crosshairY.value = (1 - (newReso / 100)) * rect.height
+    crosshairY.value = (1 - (newReso / 30)) * rect.height
   }
 })
 
