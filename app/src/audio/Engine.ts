@@ -6,6 +6,8 @@ export class AudioEngine {
   private filter: Tone.Filter
   private lfo: Tone.LFO
   private pitchEnv: Tone.Envelope
+  private masterVolume: Tone.Volume
+
 
   constructor() {
     this.osc = new Tone.OmniOscillator('C4', 'sine')
@@ -36,10 +38,14 @@ export class AudioEngine {
         release: 0
     })
 
-    // Routing: Osc -> Filter -> AmpEnv -> Master
+    // Master Volume
+    this.masterVolume = new Tone.Volume(-12)
+
+    // Routing: Osc -> Filter -> AmpEnv -> MasterVolume -> Destination
     this.osc.connect(this.filter)
     this.filter.connect(this.ampEnv)
-    this.ampEnv.toDestination()
+    this.ampEnv.connect(this.masterVolume)
+    this.masterVolume.toDestination()
   }
 
   public async start() {
