@@ -7,3 +7,6 @@
 ## 2024-05-25 - Extracted Core Functionality into Templates
 **Learning:** Understanding the core architecture of the audio application (Tone.js, WaveSurfer.js, Pinia state) helps in extracting useful, standalone templates for educational purposes. We successfully extracted the synth engine, recording, audio editing, waveform visualization, and state management logic into a documented `TEMPLATES.md` file.
 **Action:** No direct performance impact, but ensures the core concepts are easily accessible for customization and learning without navigating the full app structure.
+## 2024-05-30 - Decoupling Base Parameters from Modulation
+**Learning:** Directly modifying base state variables (like filter cutoff) with high-frequency sensor inputs breaks manual user control.
+**Action:** Separate base parameter state from modulation state. Use a watcher that combines both the base value and the modulation amount (Value * Depth) to calculate the final target value sent to the audio engine, preserving manual control of the base parameter.

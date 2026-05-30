@@ -6,7 +6,7 @@ import { useSensor } from '@/composables/useSensor'
 import { watch, onUnmounted } from 'vue'
 
 const store = useSynthStore()
-const { filter, baseFreq } = storeToRefs(store)
+const { filter, baseFreq, filterModDepth, filterModValue } = storeToRefs(store)
 const router = useRouter()
 
 const { requestAccess, isActive, getNormalizedBeta, stop } = useSensor()
@@ -14,8 +14,7 @@ const { requestAccess, isActive, getNormalizedBeta, stop } = useSensor()
 // Sensor Mapping Logic
 watch(() => getNormalizedBeta(), (val) => {
     if (isActive.value) {
-        // Map beta (0.0 - 1.0) to Filter Cutoff (100 - 10000)
-        filter.value.cutoff = 100 + (val * 9900)
+        filterModValue.value = val
     }
 })
 
@@ -48,6 +47,18 @@ const toggleSensor = async () => {
     <p class="text-gray-600">スマートフォンの傾き（ジャイロセンサー）を使ってパラメータをリアルタイムに操作します。今回はフィルターのカットオフに結線されています。</p>
 
     <div class="bg-white p-6 rounded-lg shadow-md space-y-6">
+
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">ベースカットオフ周波数 (Base Cutoff: {{ Math.round(filter.cutoff) }} Hz)</label>
+            <input type="range" min="50" max="20000" step="1" v-model="filter.cutoff" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+            <p class="text-xs text-gray-500 mt-1">手動で設定する基準のカットオフ周波数です。</p>
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">センサー適用量 (Mod Depth: {{ Math.round(filterModDepth * 100) }}%)</label>
+            <input type="range" min="0" max="1" step="0.01" v-model="filterModDepth" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+            <p class="text-xs text-gray-500 mt-1">センサーによる変化の大きさを調整します。</p>
+        </div>
 
         <div class="text-center">
              <button @click="toggleSensor"

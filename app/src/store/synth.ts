@@ -28,6 +28,10 @@ export const useSynthStore = defineStore('synth', () => {
   // ...
   const currentStep = ref(1)
 
+  // Modulation
+  const filterModDepth = ref(0)
+  const filterModValue = ref(0)
+
   watch(oscType, (val) => {
     engine.setOscillatorType(val)
   })
@@ -40,9 +44,11 @@ export const useSynthStore = defineStore('synth', () => {
     engine.setAmpEnvelope(val.attack, val.decay, val.sustain, val.release)
   }, { deep: true })
 
-  watch(filter, (val) => {
-    engine.setFilter(val.cutoff, val.resonance)
-  }, { deep: true })
+  watch([() => filter.value.cutoff, () => filter.value.resonance, filterModValue, filterModDepth], ([cutoff, resonance, modVal, modDepth]) => {
+    const modAmount = modVal * modDepth * 10000
+    const finalCutoff = Math.max(50, Math.min(20000, cutoff + modAmount))
+    engine.setFilter(finalCutoff, resonance)
+  })
 
   const triggerNote = () => {
       engine.start()
@@ -66,6 +72,8 @@ export const useSynthStore = defineStore('synth', () => {
     currentStep,
     triggerNote,
     triggerNoteOn,
-    triggerNoteOff
+    triggerNoteOff,
+    filterModDepth,
+    filterModValue
   }
 })
